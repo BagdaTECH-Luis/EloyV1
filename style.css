@@ -619,8 +619,8 @@ script {
     font-size: 0.85rem;
     color: var(--text-muted);
     font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
+    display: inline;
+    margin-bottom: 0;
 }
 
 .content p {
@@ -1241,4 +1241,5 @@ script {
     .update-date {
         margin-top: 4px;
     }
+
 }
