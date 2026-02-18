@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+                   script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
+                   style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
+                   font-src 'self' https://cdn.jsdelivr.net; 
+                   img-src 'self' data:; 
+                   connect-src 'self' https://bagdatech.app.n8n.cloud;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+
+    <title>Eloy AI - Bem-vindo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <!-- Container dos Efeitos (Chuva ou Pixel) -->
+    <div id="effects-container" class="background-effects"></div>
+
+    <header class="global-header">
+        <a href="#" class="logo">
+            <i class="bi bi-stars"></i> Eloy AI
+        </a>
+        <div class="nav-links">
+            <a href="faq.html" class="nav-link">FAQ</a>
+            <a href="updates.html" class="nav-link">Atualizações</a>
+            <button id="theme-toggle" class="btn-toggle-theme" title="Alternar Tema">
+                <i class="bi bi-moon-stars-fill"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="robot-icon-wrapper">
+            <i class="bi bi-robot"></i>
+        </div>
+        <h1 class="page-title">Bem-vindo à Eloy AI</h1>
+        <p>Sua assistente inteligente para suporte operacional e regras institucionais. Otimize seus processos com
+            respostas rápidas e precisas.</p>
+        <div class="hero-actions">
+            <a href="chat.html" class="cta-button">
+                <i class="bi bi-chat-dots-fill"></i>
+                Conversar agora
+            </a>
+        </div>
+    </div>
+    <div class="features">
+        <div class="feature-card">
+            <span class="beta-badge">BETA FECHADA</span>
+            <i class="bi bi-gear-fill"></i>
+            <h3>Validação Controlada</h3>
+            <p>O sistema encontra-se em estágio de homologação, com acesso restrito para testes de funcionalidade e
+                consistência técnica em ambiente controlado.</p>
+        </div>
+        <div class="feature-card">
+            <i class="bi bi-briefcase-fill"></i>
+            <h3>Foco Operacional</h3>
+            <p>Desenvolvimento voltado ao suporte técnico de processos e regras de negociação institucionais, visando
+                otimizar a consulta de diretrizes internas.</p>
+        </div>
+        <div class="feature-card">
+            <i class="bi bi-graph-up-arrow"></i>
+            <h3>Melhoria Contínua</h3>
+            <p>Fase dedicada à coleta de feedbacks e ajustes de parâmetros para garantir a estabilidade e precisão das
+                respostas antes da expansão do acesso.</p>
+        </div>
+    </div>
+
+    <div class="acknowledgements">
+        <div class="ack-title"><i class="bi bi-heart-fill"></i> Agradecimentos aos Beta Testers</div>
+        <div class="ack-list">
+            <div class="tester-badge"><i class="bi bi-person-check-fill"></i> Janaína Ferreira</div>
+            <div class="tester-badge"><i class="bi bi-person-check-fill"></i> Tatiana Regina</div>
+            <div class="tester-badge"><i class="bi bi-person-check-fill"></i> Camilly</div>
+            <div class="tester-badge"><i class="bi bi-person-check-fill"></i> Ryan Roque</div>
+            <div class="tester-badge"><i class="bi bi-person-check-fill"></i> Mayara Costa</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <footer class="global-footer">
+        <div class="footer-content">
+            &copy; 2026 Bagda TECH • Suporte Institucional em Fase Experimental.
+        </div>
+    </footer>
+</body>
+
+</html>

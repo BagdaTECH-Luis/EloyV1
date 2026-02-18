@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; 
+                 script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net; 
+                 style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
+                 font-src 'self' https://cdn.jsdelivr.net; 
+                 img-src 'self' data:; 
+                 connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://bagdatech.app.n8n.cloud;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+
+  <title>Eloy AI - Login & Cadastro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div id="effects-container" class="background-effects"></div>
+
+  <header class="global-header">
+    <a href="index.html" class="logo">
+      <i class="bi bi-stars"></i> Eloy AI
+    </a>
+    <div class="nav-links">
+      <a href="updates.html" class="nav-link">Atualizações</a>
+      <button id="theme-toggle" class="btn-toggle-theme" title="Alternar Tema">
+        <i class="bi bi-moon-stars-fill"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="login-container">
+    <div class="login-card">
+      <i class="bi bi-robot logo-glow"></i>
+      <h1 id="form-title">Bem-vindo</h1>
+      <p id="form-subtitle">Faça login para continuar</p>
+
+      <!-- Container de Erro -->
+      <div id="auth-error"></div>
+
+      <div class="input-group">
+        <input type="email" id="email" class="custom-input" placeholder="Seu email" required>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="senha" class="custom-input" placeholder="Sua senha" required>
+      </div>
+
+      <button id="btn-submit" class="btn-primary">
+        Entrar <i class="bi bi-arrow-right-short" style="font-size: 1.2rem;"></i>
+      </button>
+
+      <button id="btn-toggle" class="btn-secondary">
+        Não tem conta? Cadastre-se
+      </button>
+    </div>
+  </div>
+
+  <footer class="global-footer">
+    <div class="footer-content">
+      &copy; 2026 Bagda TECH • Segurança Institucional
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="security-utils.js"></script>
+
+  <!-- Lógica Firebase corrigida -->
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+    import { signInWithEmailAndPassword, createUserWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Função de cadastro limpa (sem logs de debug)
+    window.register = async function () {
+      const email = document.getElementById("email").value.trim();
+      const senha = document.getElementById("senha").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          nickname: user.email,
+          role: "user",
+          totalQuestions: 0,
+          createdAt: new Date(),
+          lastActive: null
+        });
+
+        window.location.href = "index.html";
+
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    let isLoginMode = true;
+
+    const title = document.getElementById("form-title");
+    const subtitle = document.getElementById("form-subtitle");
+    const btnSubmit = document.getElementById("btn-submit");
+    const btnToggle = document.getElementById("btn-toggle");
+    const errorContainer = document.getElementById("auth-error");
+
+    const emailInput = document.getElementById("email");
+    const senhaInput = document.getElementById("senha");
+
+    // Função para mostrar erro
+    function showError(message) {
+      errorContainer.innerText = message;
+      errorContainer.style.display = "block";
+    }
+
+    function clearError() {
+      errorContainer.innerText = "";
+      errorContainer.style.display = "none";
+    }
+
+    // Alternar entre Login e Cadastro
+    btnToggle.addEventListener("click", () => {
+      isLoginMode = !isLoginMode;
+      clearError();
+
+      if (isLoginMode) {
+        title.innerText = "Bem-vindo";
+        subtitle.innerText = "Faça login para continuar";
+        btnSubmit.innerHTML = 'Entrar <i class="bi bi-arrow-right-short" style="font-size: 1.2rem;"></i>';
+        btnToggle.innerText = "Não tem conta? Cadastre-se";
+      } else {
+        title.innerText = "Criar Conta";
+        subtitle.innerText = "Junte-se ao Eloy AI";
+        btnSubmit.innerHTML = 'Cadastrar <i class="bi bi-person-plus-fill" style="font-size: 1.1rem;"></i>';
+        btnToggle.innerText = "Já tem conta? Entrar";
+      }
+    });
+
+    // Ação Principal
+    btnSubmit.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      const senha = senhaInput.value.trim();
+
+      // VALIDAÇÃO DE EMAIL
+      if (!validateEmail(email)) {
+        showError("Por favor, insira um e-mail válido.");
+        return;
+      }
+
+      // VALIDAÇÃO DE SENHA
+      if (!senha) {
+        showError("Por favor, preencha a senha.");
+        return;
+      }
+
+      // Validação de senha forte apenas no modo cadastro
+      if (!isLoginMode) {
+        const passwordCheck = validatePassword(senha);
+        if (!passwordCheck.valid) {
+          showError(passwordCheck.message);
+          return;
+        }
+      } else {
+        // No login, mínimo 6 caracteres (regra Firebase)
+        if (senha.length < 6) {
+          showError("A senha precisa ter no mínimo 6 caracteres.");
+          return;
+        }
+      }
+
+      // PROTEÇÃO BRUTE FORCE (apenas no login)
+      if (isLoginMode) {
+        const rateCheck = checkRateLimit('login_attempts', 5, 300000); // 5 tentativas/5min
+        if (!rateCheck.allowed) {
+          const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+          showError(`🔒 Muitas tentativas. Aguarde ${waitMinutes} minuto(s).`);
+          return;
+        }
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.style.opacity = "0.7";
+      clearError();
+
+      try {
+        if (isLoginMode) {
+          // Login
+          await signInWithEmailAndPassword(auth, email, senha);
+          resetRateLimit('login_attempts'); // Reset em login bem-sucedido
+          window.location.href = "index.html";
+        } else {
+          // Cadastro: usar função externa limpa
+          await window.register();
+        }
+      } catch (error) {
+        // Limpar campos sensíveis em caso de erro
+        senhaInput.value = '';
+
+        let friendlyMessage = "Ocorreu um erro inesperado.";
+
+        switch (error.code) {
+          case 'auth/invalid-email':
+            friendlyMessage = "E-mail inválido.";
+            break;
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+          case 'auth/invalid-credential':
+            friendlyMessage = "E-mail ou senha incorretos.";
+            break;
+          case 'auth/email-already-in-use':
+            friendlyMessage = "Este e-mail já está cadastrado.";
+            break;
+          case 'auth/weak-password':
+            friendlyMessage = "Crie uma senha mais forte (mínimo 8 caracteres com letras e números).";
+            break;
+          case 'auth/network-request-failed':
+            friendlyMessage = "Erro de conexão. Verifique sua internet.";
+            break;
+          case 'auth/too-many-requests':
+            friendlyMessage = "Muitas tentativas. Aguarde alguns minutos.";
+            break;
+          default:
+            friendlyMessage = `Erro: ${error.message}`;
+        }
+
+        showError(friendlyMessage);
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.style.opacity = "1";
+      }
+    });
+  </script>
+
+</body>
+
+</html>

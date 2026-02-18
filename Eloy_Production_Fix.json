@@ -1,0 +1,278 @@
+{
+    "name": "Eloy Production Fix",
+    "nodes": [
+        {
+            "parameters": {
+                "public": true,
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "trigger-node",
+            "name": "Chat Trigger",
+            "webhookId": "49f689c9-bc02-4478-bca1-4261e1c74fbe"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "mensagem-assign",
+                            "name": "Mensagem",
+                            "value": "={{ $json.chatInput }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "session-assign",
+                            "name": "idConversa",
+                            "value": "={{ $json.sessionId }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                220,
+                0
+            ],
+            "id": "organizar-dados",
+            "name": "Organizar Dados do Cliente"
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.Mensagem }}",
+                            "operation": "isNotEmpty"
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                440,
+                0
+            ],
+            "id": "validacao",
+            "name": "Validar Mensagem"
+        },
+        {
+            "parameters": {
+                "content": "Mensagem inválida.",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                660,
+                140
+            ],
+            "id": "erro-msg",
+            "name": "Mensagem Inválida"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.Mensagem }}",
+                "options": {
+                    "systemMessage": "You are Eloy, a professional financial negotiation support assistant.\n- Be direct and objective.\n- Never invent rules.\n- Never exceed allowed limits.\n- Keep answers short.\n- No long explanations.\n- No opinions."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.7,
+            "position": [
+                660,
+                -100
+            ],
+            "id": "ai-agent",
+            "name": "AI Agent"
+        },
+        {
+            "parameters": {
+                "model": "llama-3.3-70b-versatile",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                660,
+                120
+            ],
+            "id": "groq-model",
+            "name": "Groq Model",
+            "credentials": {
+                "groqApi": {
+                    "id": "4kek7WspiGIHasOk",
+                    "name": "Groq account 2"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "descriptionType": "manual",
+                "toolDescription": "Você é Aloy, assistente de suporte para operadores de negociação financeira.\n\nSua função é responder perguntas de forma objetiva, profissional e direta, com base apenas nas regras fornecidas pela instituição.\n\nRegras importantes:\n\n- Nunca invente condições.\n- Nunca ultrapasse limites de parcelamento ou desconto.\n- Sempre diferencie cliente ativo e inativo quando aplicável.\n- Quando não houver autorização, responda que \"não é permitido conforme política da instituição\".\n- Se houver alternativa disponível, apresente.\n- Utilize linguagem formal e padrão de atendimento financeiro.\n- Não dê opiniões.\n- Não explique política interna, apenas informe a regra.\n- Respostas curtas e claras.\n\nModelo de resposta:\n\n1) Informe se pode ou não pode.\n2) Informe limite (parcelas, desconto, entrada).\n3) Ofereça alternativa quando existir.\n4) Não escreva textos longos.\n\nExemplo de padrão:\n\nPergunta: Pode parcelar no boleto?\nResposta: Pode até 6x no boleto para aluno ativo. Para inativo, somente cartão até 12x.\n\nPergunta: Pode dar desconto?\nResposta: Permitido até 20% sobre juros e encargos. Valor principal não sofre desconto.\n\nSempre mantenha padrão profissional e objetivo.",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1UClfFx56BzHSkSU9S6pPDCKgg1lwOtrZ46rnnqC5l8A",
+                    "mode": "list",
+                    "cachedResultName": "Eloy V1",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UClfFx56BzHSkSU9S6pPDCKgg1lwOtrZ46rnnqC5l8A/edit?usp=drivesdk"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": 549484416,
+                    "mode": "list",
+                    "cachedResultName": "Eloy Conhecimento",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UClfFx56BzHSkSU9S6pPDCKgg1lwOtrZ46rnnqC5l8A/edit#gid=549484416"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleSheetsTool",
+            "typeVersion": 4.7,
+            "position": [
+                880,
+                340
+            ],
+            "id": "google-sheets-tool",
+            "name": "Memórias Eloy",
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "KKk0j510RePTA0Gk",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sessionIdType": "customKey",
+                "sessionKey": "={{ $json.idConversa }}"
+            },
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.3,
+            "position": [
+                780,
+                140
+            ],
+            "id": "memory",
+            "name": "Memory"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "output-assign",
+                            "name": "output",
+                            "value": "={{ $json.output || $json.text || $json.message }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.4,
+            "position": [
+                1000,
+                0
+            ],
+            "id": "format-output",
+            "name": "Formatar Saida"
+        }
+    ],
+    "connections": {
+        "Chat Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Organizar Dados do Cliente",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Organizar Dados do Cliente": {
+            "main": [
+                [
+                    {
+                        "node": "Validar Mensagem",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validar Mensagem": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Mensagem Inválida",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Memórias Eloy": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Formatar Saida",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
