@@ -72,7 +72,7 @@
         const sendBtn = document.getElementById('send-btn');
         const progressBar = document.getElementById('progress-bar');
 
-        const webhookUrl = '/api/chat';
+        const webhookUrl = 'https://bagdatech.app.n8n.cloud/webhook/49f689c9-bc02-4478-bca1-4261e1c74fbe/chat';
         let sessionId = safeLocalStorageGet('chatSessionId') || crypto.randomUUID();
         safeLocalStorageSet('chatSessionId', sessionId);
 
@@ -224,5 +224,6 @@
         userInput.focus();
     </script>
 </body>
+
 
 </html>
